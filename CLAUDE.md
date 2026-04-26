@@ -223,5 +223,10 @@ Not required for normal operation.
 
 ## Known Issues / Tech Debt
 
-- `lessons.js evolveThresholds()` evolves `maxVolatility` + `minFeeTvlRatio` (wrong key names — should be `minFeeActiveTvlRatio`; `maxVolatility` doesn't exist in config at all). The evolution is a no-op for those keys.
-- `get_wallet_positions` tool (dlmm.js) is in definitions.js but not in MANAGER_TOOLS or SCREENER_TOOLS — only available in GENERAL role.
+- `get_wallet_positions` tool (dlmm.js) is in definitions.js but not in MANAGER_TOOLS or SCREENER_TOOLS — only available in GENERAL role. This is intentional: managers use `get_my_positions`; `get_wallet_positions` is for arbitrary wallet lookups.
+
+## Resolved Issues (fixed in this branch)
+
+- ~~`lessons.js evolveThresholds()` evolved `maxVolatility` using `config.screening.maxVolatility` which did not exist in config.~~ → Fixed: `maxVolatility` (default 5.0) added to `config.js` screening section, `reloadScreeningThresholds()`, `executor.js CONFIG_MAP`, and `definitions.js` update_config description.
+- ~~`lessons.js evolveThresholds()` used wrong key name `minFeeTvlRatio` instead of `minFeeActiveTvlRatio` — evolution was a no-op.~~ → Fixed: all 5 occurrences in `evolveThresholds()` corrected to `minFeeActiveTvlRatio`.
+- ~~Typo `derivLesson` in lessons.js.~~ → Fixed: renamed to `deriveLesson`.
