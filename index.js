@@ -609,28 +609,35 @@ Positions: ${prePositions.total_positions}/${config.risk.maxPositions} | SOL: ${
 PRE-LOADED CANDIDATES (${passing.length} pools):
 ${candidateBlocks.join("\n\n")}
 
+DEPLOY RULES (follow exactly):
+- amount_y = ${deployAmount} (this is the SOL amount — always pass this exact number)
+- amount_x = 0 (single-side SOL only, never set amount_x)
+- strategy = ${config.strategy.strategy}
+- bins_below = round(${config.strategy.minBinsBelow} + (volatility/5)*${config.strategy.maxBinsBelow - config.strategy.minBinsBelow}) clamped to [${config.strategy.minBinsBelow},${config.strategy.maxBinsBelow}]
+- bins_above = 0
+- active_bin is pre-fetched in each candidate block above — do NOT call get_active_bin separately
+- After deploy_position returns, read these fields from the tool result:
+    result.price_range.min_price → use as minPrice
+    result.price_range.max_price → use as maxPrice
+    result.range_coverage.downside_pct → use as downside %
+    result.range_coverage.upside_pct → use as upside %
+    result.range_coverage.width_pct → use as total width %
+  If any field is null or missing, write "n/a" — never leave angle-bracket placeholders in the report.
+
 STEPS:
 1. Pick the best candidate based on narrative quality, smart wallets, and pool metrics.
-2. Call deploy_position (active_bin is pre-fetched above — no need to call get_active_bin).
-   strategy = ${config.strategy.strategy} (always use this, never change it).
-   bins_below = round(${config.strategy.minBinsBelow} + (volatility/5)*${config.strategy.maxBinsBelow - config.strategy.minBinsBelow}) clamped to [${config.strategy.minBinsBelow},${config.strategy.maxBinsBelow}].
-   bins_above = 0. Single-side SOL only: set amount_y, keep amount_x = 0.
-3. Report in this exact format (no tables, no extra sections):
+2. Call deploy_position using the DEPLOY RULES above.
+3. After the tool returns, write the report using ONLY actual values from the tool result and the candidate data. Do not output any instruction text, angle-bracket placeholders, or IMPORTANT notes in the report.
+
+Report format when deployed (fill every field with real values):
    🚀 DEPLOYED
 
    <pool name>
    <pool address>
 
-   ◎ <deploy amount> SOL | <strategy> | bin <active_bin>
-   Range: <minPrice> → <maxPrice>
-   Range cover: <downside %> downside | <upside %> upside | <total width %> total
-
-   IMPORTANT:
-   - Do NOT calculate the range percentages yourself.
-   - Use the actual deploy_position tool result:
-     range_coverage.downside_pct
-     range_coverage.upside_pct
-     range_coverage.width_pct
+   ◎ ${deployAmount} SOL | ${config.strategy.strategy} | bin <active_bin value>
+   Range: <result.price_range.min_price> → <result.price_range.max_price>
+   Range cover: <result.range_coverage.downside_pct>% downside | <result.range_coverage.upside_pct>% upside | <result.range_coverage.width_pct>% total
 
    MARKET
    Fee/TVL: <x>%
@@ -648,13 +655,12 @@ STEPS:
    Smart wallets: <names or none>
 
    RISK
-   <If OKX advanced/risk data exists, list only the fields that actually exist: Risk level, Bundle, Sniper, Suspicious, ATH distance, Rugpull, Wash.>
-   <If only rugpull/wash exist, list just those.>
-   <If OKX enrichment is missing, write exactly: OKX: unavailable>
+   <List only fields that exist from OKX data: Risk level, Bundle, Sniper, Suspicious, ATH distance, Rugpull, Wash. If OKX data missing write: OKX: unavailable>
 
    WHY THIS WON
-   <2-4 concise sentences on why this pool won, key risks, and why it still beat the alternatives>
-4. If no pool qualifies, report in this exact format instead:
+   <2-4 concise sentences on why this pool won, key risks, and why it beat the alternatives>
+
+Report format when no pool qualifies:
    ⛔ NO DEPLOY
 
    Cycle finished with no valid entry.
@@ -667,9 +673,12 @@ STEPS:
 
    REJECTED
    <short flat list of top candidate names and why they were skipped>
-IMPORTANT:
-- Never write "unknown" for OKX. Use real values, omit missing fields, or write exactly "OKX: unavailable".
-- Keep the whole report compact and highly scannable for Telegram.
+
+OUTPUT RULES:
+- Never write angle-bracket placeholders in the report. Replace every <x> with an actual value.
+- Never write "unknown" for OKX fields. Use real values, omit missing fields, or write "OKX: unavailable".
+- Never include instruction text or IMPORTANT notes in the report output.
+- Keep the whole report compact and scannable for Telegram.
       `, config.llm.maxSteps, [], "SCREENER", config.llm.screeningModel, 2048, {
         onToolStart: async ({ name }) => { await liveMessage?.toolStart(name); },
         onToolFinish: async ({ name, result, success }) => { await liveMessage?.toolFinish(name, result, success); },
