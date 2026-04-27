@@ -1,35 +1,31 @@
 {
-  "_comment": "Meridian North — Professional LP Config | Target: ~90% win rate, consistent small profit, rarely loss",
+  "_comment": "Meridian North \u2014 Professional LP Config | Target: ~90% win rate, consistent small profit, rarely loss",
   "_philosophy": "Win by not losing. Fee income + capital preservation > yield maximization. Exit fast, deploy quality.",
   "preset": "professional-90wr",
-
   "rpcUrl": "https://pump.helius-rpc.com",
   "llmBaseUrl": "",
   "llmApiKey": "",
   "llmModel": "minimax/minimax-m2.7",
   "dryRun": true,
-
   "deployAmountSol": 0.5,
   "maxPositions": 2,
   "maxDeployAmount": 50,
   "minSolToOpen": 0.7,
   "gasReserve": 0.25,
-  "positionSizePct": 0.30,
-
+  "positionSizePct": 0.3,
   "strategy": "bid_ask",
   "minBinsBelow": 42,
   "maxBinsBelow": 58,
-
   "timeframe": "5m",
   "category": "trending",
-  "minFeeActiveTvlRatio": 0.08,
-  "minTvl": 25000,
+  "minFeeActiveTvlRatio": 0.06,
+  "minTvl": 15000,
   "maxTvl": 80000,
-  "minVolume": 8000,
-  "minOrganic": 72,
-  "minQuoteOrganic": 65,
-  "minHolders": 350,
-  "minMcap": 200000,
+  "minVolume": 5000,
+  "minOrganic": 68,
+  "minQuoteOrganic": 60,
+  "minHolders": 300,
+  "minMcap": 150000,
   "maxMcap": 6000000,
   "minBinStep": 80,
   "maxBinStep": 100,
@@ -41,7 +37,7 @@
   "avoidPvpSymbols": true,
   "blockPvpSymbols": true,
   "maxVolatility": 3.5,
-  "minTokenAgeHours": 3,
+  "minTokenAgeHours": 2,
   "maxTokenAgeHours": 120,
   "athFilterPct": null,
   "allowedLaunchpads": [],
@@ -49,7 +45,6 @@
   "useDiscordSignals": false,
   "discordSignalMode": "merge",
   "screeningSource": "meteora",
-
   "stopLossPct": -10,
   "takeProfitPct": 4,
   "trailingTakeProfit": true,
@@ -71,18 +66,15 @@
   "minVolumeToRebalance": 1000,
   "pnlSanityMaxDiffPct": 5,
   "solMode": false,
-
   "managementIntervalMin": 8,
   "screeningIntervalMin": 22,
   "healthCheckIntervalMin": 60,
-
-  "temperature": 0.25,
+  "temperature": 0.35,
   "maxTokens": 4096,
   "maxSteps": 15,
   "managementModel": "minimax/minimax-m2.5",
   "screeningModel": "minimax/minimax-m2.5",
   "generalModel": "minimax/minimax-m2.7",
-
   "darwinEnabled": true,
   "darwinWindowDays": 45,
   "darwinRecalcEvery": 3,
@@ -91,7 +83,6 @@
   "darwinFloor": 0.25,
   "darwinCeiling": 2.5,
   "darwinMinSamples": 8,
-
   "agentId": "",
   "publicApiKey": "",
   "agentMeridianApiUrl": "https://api.agentmeridian.xyz/api",
@@ -99,18 +90,19 @@
   "hiveMindUrl": "",
   "hiveMindApiKey": "",
   "hiveMindPullMode": "auto",
-
   "chartIndicators": {
     "enabled": false,
     "entryPreset": "supertrend_break",
     "exitPreset": "supertrend_break",
     "rsiLength": 2,
-    "intervals": ["5_MINUTE"],
+    "intervals": [
+      "5_MINUTE"
+    ],
     "candles": 298,
     "rsiOversold": 30,
     "rsiOverbought": 80,
     "requireAllIntervals": false
   },
-
-  "telegramChatId": ""
+  "telegramChatId": "",
+  "_relaxNote": "Slightly relaxed from ultra-strict to account for real market conditions. Darwin will auto-tighten as it learns."
 }
